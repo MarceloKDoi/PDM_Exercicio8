@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { StyleSheet, View, TextInput, Button } from 'react-native'
 import Cores from '../constantes/Cores'
-import ContatosTela from '../telas/ContatosTela';
+
 
 const CadastroTela = () => {
 
