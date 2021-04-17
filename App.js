@@ -1,10 +1,10 @@
 import React from 'react';
+
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import reduxThunk from 'redux-thunk';
 import contactsReducer from './store/contacts-reducers'
-
-import ContatosNavigator from './navegacao/ContatosNavigator'
+import ContactsNavigator from './navigation/ContactsNavigator';
 
 export default function App() {
     const rootReducer = combineReducers({
