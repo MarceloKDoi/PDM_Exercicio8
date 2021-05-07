@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
     View,
     Text,
@@ -17,6 +17,10 @@ import Colors from '../constantes/Colors';
 const ContactListScreen = () => {
     const contacts = useSelector(state => state.contacts.contacts);
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(contactsActions.getContacts());
+    }, [])
 
     const removeContact = (id) => {
         Alert.alert(
@@ -87,6 +91,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.background
     },
     title: {
+        fontFamily: 'Archivo_700Bold',
         fontSize: 38,
         color: Colors.titlePrimary,
         marginBottom: 24,
@@ -96,6 +101,7 @@ const styles = StyleSheet.create({
         flex: 1
     },
     contactListEmpty: {
+        fontFamily: 'Archivo_400Regular',
         fontSize: 18,
         color: '#6A6180',
         textAlign: 'center'

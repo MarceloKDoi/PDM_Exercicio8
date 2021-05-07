@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import {
     View,
     Text,
@@ -6,9 +7,12 @@ import {
     StyleSheet,
     Alert
 } from 'react-native';
+
+import { useDispatch } from 'react-redux';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import { TextInputMask } from 'react-native-masked-text';
-import { useDispatch } from 'react-redux';
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
 import * as contactsActions from '../store/contacts-actions';
 import SelectImage from '../components/SelectImage';
 import Colors from '../constantes/Colors';
@@ -32,7 +36,27 @@ const NewContactScreen = (props) => {
         setImageURI(imageURI);
     }
 
-    const handleAddContact = () => {
+    const handleVerifyLocationPermission = async () => {
+        const { status } = await Permissions.askAsync(Permissions.LOCATION);
+
+        return status === 'granted';
+    }
+
+    const handleCaptureLocation = async () => {
+        try {
+            const location = await Location.getCurrentPositionAsync({ timeout: 8000 });
+
+            return { latitude: location.coords.latitude, longitude: location.coords.longitude };
+        } catch (err) {
+            Alert.alert(
+                "Impossível obter a localização",
+                "Tente novamente mais tarde.",
+                [{ text: 'OK' }]
+            );
+        }
+    }
+
+    const handleAddContact = async () => {
         if (!name.trim() || !number) {
             Alert.alert('Atenção!', 'Preencha todos os campos');
             return;
@@ -42,7 +66,19 @@ const NewContactScreen = (props) => {
             return;
         }
 
-        dispatch(contactsActions.addContact(name, number, imageURI));
+        if (!(await handleVerifyLocationPermission())) {
+            Alert.alert(
+                'Sem permissão para uso do mecanismo de localização',
+                'É preciso liberar o acesso ao recurso de localização',
+                [{ text: 'OK' }]
+            );
+
+            return;
+        }
+
+        const location = await handleCaptureLocation();
+
+        dispatch(contactsActions.addContact(name, number, imageURI, location));
         props.navigation.navigate('ContactList');
     }
 
@@ -70,9 +106,7 @@ const NewContactScreen = (props) => {
                     style={styles.input}
                 />
                 <SelectImage onCaptureImage={handleCaptureImageURI} />
-                <RectButton
-                    onPress={handleAddContact}
-                    style={styles.addButton}>
+                <RectButton onPress={handleAddContact} style={styles.addButton}>
                     <Text style={styles.addButtonText}>Adicionar</Text>
                 </RectButton>
             </View>

@@ -64,6 +64,7 @@ const styles = StyleSheet.create({
         borderRadius: 100
     },
     imageEmpty: {
+        fontFamily: 'Archivo_400Regular',
         fontSize: 17
     },
     selectImageButton: {
@@ -76,8 +77,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     selectImageButtonText: {
-
         color: Colors.white,
+        fontFamily: 'Archivo_400Regular',
         fontSize: 16
     }
 });

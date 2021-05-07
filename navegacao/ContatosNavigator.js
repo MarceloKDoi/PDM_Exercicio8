@@ -1,23 +1,25 @@
 import { createStackNavigator } from 'react-navigation-stack';
-import { createAppContainer } from 'react-navigation';
-import { Platform } from 'react-native';
-import CadastroTela from '../telas/CadastroTela';
-import ContatosTela from '../telas/ContatosTela';
-import Cores from '../constantes/Cores';
+import { createAppContainer } from "react-navigation";
+import ContactListScreen from '../screens/ContactListScreen';
+import NewContactScreen from '../screens/NewContactScreen';
+import Colors from '../constantes/Colors';
 
-const ContatosNavigator = createStackNavigator({
-
-    ListaDeContatos: ContatosTela,
-    Cadastro: CadastroTela
-},
-    {
-        defaultNavigationOptions: {
-            headerStyle: {
-                backgroundColor: Platform.OS === 'android' ? Cores.primary : 'white',
-                headerTintColor: Platform.OS === 'android' ? 'white' : Cores.primary
-            }
-        }
+const ContactsNavigator = createStackNavigator({
+    ContactList: ContactListScreen,
+    NewContact: NewContactScreen
+}, {
+    defaultNavigationOptions: {
+        headerStyle: {
+            backgroundColor: Colors.primary,
+            height: 100
+        },
+        headerTitleStyle: {
+            fontSize: 24,
+            fontFamily: 'Archivo_700Bold'
+        },
+        headerTintColor: Colors.white
     }
-)
+}
+);
 
-export default createAppContainer(ContatosNavigator);
+export default createAppContainer(ContactsNavigator);
