@@ -10,7 +10,7 @@ export const getContacts = () => {
     return async dispatch => {
         try {
             const result = await getAllContacts();
-            dispatch({ type: GET_CONTACTS, contacts: result.rows._array || [] })
+            dispatch({ type: GET_CONTACTS, contacts: result.rows._array || [] })//JSON com informações de GPS
         }
         catch (err) {
             Alert.alert('Erro', 'Ocorreu um erro ao buscar os contatos.');

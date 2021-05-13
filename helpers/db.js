@@ -7,13 +7,13 @@ export const init = () => {
         db.transaction((tx) => {
             tx.executeSql(
                 `CREATE TABLE IF NOT EXISTS tb_contact (
-          id INTEGER PRIMARY KEY,
-          name TEXT NOT NULL,
-          number TEXT NOT NULL,
-          imageURI TEXT NULL,
-          latitude REAL NOT NULL,
-          longitude REAL NOT NULL,
-          datetime TEXT NOT NULL)`,
+                 id INTEGER PRIMARY KEY,
+                 name TEXT NOT NULL,
+                 number TEXT NOT NULL,
+                 imageURI TEXT NULL,
+                 latitude REAL NOT NULL,
+                 longitude REAL NOT NULL,
+                 datetime TEXT NOT NULL)`,
                 [],
                 () => { resolve() },
                 (_, err) => { reject(err) },

@@ -18,6 +18,7 @@ const ContactListScreen = () => {
     const contacts = useSelector(state => state.contacts.contacts);
     const dispatch = useDispatch();
 
+    //Atualiza lista de contatos e FlatList
     useEffect(() => {
         dispatch(contactsActions.getContacts());
     }, [])
@@ -25,7 +26,7 @@ const ContactListScreen = () => {
     const removeContact = (id) => {
         Alert.alert(
             'Confirmação',
-            `Tem certeza que deseja excluir o contato ${contacts.find(contact => contact.id === id)?.name}?`,
+            `Realmente deseja excluir o contato ${contacts.find(contact => contact.id === id)?.name}?`,
             [
                 {
                     text: 'Sim',

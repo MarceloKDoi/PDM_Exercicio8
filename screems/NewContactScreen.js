@@ -8,6 +8,8 @@ import {
     Alert
 } from 'react-native';
 
+import LocationCapture from '../components/LocationCapture'
+
 import { useDispatch } from 'react-redux';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import { TextInputMask } from 'react-native-masked-text';
@@ -42,11 +44,16 @@ const NewContactScreen = (props) => {
         return status === 'granted';
     }
 
+
     const handleCaptureLocation = async () => {
         try {
             const location = await Location.getCurrentPositionAsync({ timeout: 8000 });
 
-            return { latitude: location.coords.latitude, longitude: location.coords.longitude };
+            return {
+                //horario: ????.????.????
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude
+            };
         } catch (err) {
             Alert.alert(
                 "Impossível obter a localização",
@@ -68,8 +75,8 @@ const NewContactScreen = (props) => {
 
         if (!(await handleVerifyLocationPermission())) {
             Alert.alert(
-                'Sem permissão para uso do mecanismo de localização',
-                'É preciso liberar o acesso ao recurso de localização',
+                'Não há permissão para uso do mecanismo de localização',
+                'É autorizar o acesso ao recurso de localização',
                 [{ text: 'OK' }]
             );
 
