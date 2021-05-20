@@ -8,23 +8,20 @@ import {
     Alert
 } from 'react-native';
 
-import LocationCapture from '../components/LocationCapture'
-
-import { useDispatch } from 'react-redux';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import { TextInputMask } from 'react-native-masked-text';
+import { documentDirectory, moveAsync } from 'expo-file-system';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
-import * as contactsActions from '../store/contacts-actions';
+
 import SelectImage from '../components/SelectImage';
 import Colors from '../constantes/Colors';
+import db from '../database/db';
 
 const NewContactScreen = (props) => {
     const [name, setName] = useState('');
     const [number, setNumber] = useState('');
     const [imageURI, setImageURI] = useState();
-
-    const dispatch = useDispatch();
 
     const handleChangeName = (name) => {
         setName(name);
@@ -38,22 +35,40 @@ const NewContactScreen = (props) => {
         setImageURI(imageURI);
     }
 
+    const handleSaveImageInDevice = async () => {
+        try {
+            let imagePath;
+
+            if (imageURI) {
+                const fileName = imageURI.split('/').pop();
+                imagePath = documentDirectory + fileName;
+
+                await moveAsync({
+                    from: imageURI,
+                    to: imagePath
+                });
+
+            }
+
+            return imagePath || null;
+        }
+        catch (err) {
+            Alert.alert('Erro', 'Ocorreu um erro ao salvar o contato. Tente novamente mais tarde!');
+            throw err;
+        }
+    }
+
     const handleVerifyLocationPermission = async () => {
         const { status } = await Permissions.askAsync(Permissions.LOCATION);
 
         return status === 'granted';
     }
 
-
     const handleCaptureLocation = async () => {
         try {
             const location = await Location.getCurrentPositionAsync({ timeout: 8000 });
 
-            return {
-                //horario: ????.????.????
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude
-            };
+            return { latitude: location.coords.latitude, longitude: location.coords.longitude };
         } catch (err) {
             Alert.alert(
                 "Impossível obter a localização",
@@ -75,8 +90,8 @@ const NewContactScreen = (props) => {
 
         if (!(await handleVerifyLocationPermission())) {
             Alert.alert(
-                'Não há permissão para uso do mecanismo de localização',
-                'É autorizar o acesso ao recurso de localização',
+                'Sem permissão para uso do mecanismo de localização',
+                'É preciso liberar o acesso ao recurso de localização',
                 [{ text: 'OK' }]
             );
 
@@ -85,7 +100,15 @@ const NewContactScreen = (props) => {
 
         const location = await handleCaptureLocation();
 
-        dispatch(contactsActions.addContact(name, number, imageURI, location));
+        const imagePath = await handleSaveImageInDevice();
+
+        db.collection('contacts').add({
+            name,
+            number,
+            imageURI: imagePath,
+            location,
+            dateTime: new Date()
+        })
         props.navigation.navigate('ContactList');
     }
 

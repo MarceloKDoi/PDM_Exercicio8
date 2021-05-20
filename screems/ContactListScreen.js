@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -7,31 +7,44 @@ import {
     Platform,
     Alert
 } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
-import * as contactsActions from '../store/contacts-actions';
 import ContactItem from '../components/ContactItem';
 import ButtonHeader from '../components/ButtonHeader';
 import Colors from '../constantes/Colors';
+import db from '../database/db';
 
 const ContactListScreen = () => {
-    const contacts = useSelector(state => state.contacts.contacts);
-    const dispatch = useDispatch();
+    const [contacts, setContacts] = useState([]);
 
-    //Atualiza lista de contatos e FlatList
     useEffect(() => {
-        dispatch(contactsActions.getContacts());
-    }, [])
+        db.collection('contacts').orderBy('name').onSnapshot(snapshot => {
+            const list = [];
 
-    const removeContact = (id) => {
+            snapshot.forEach(doc => {
+                list.push({
+                    id: doc.id,
+                    name: doc.data().name,
+                    number: doc.data().number,
+                    imageURI: doc.data().imageURI,
+                    location: doc.data().position,
+                    datetime: doc.data().datetime
+                })
+            });
+
+            setContacts(list);
+        })
+    }, []);
+
+    const handleRemoveContact = (id) => {
         Alert.alert(
             'Confirmação',
-            `Realmente deseja excluir o contato ${contacts.find(contact => contact.id === id)?.name}?`,
+            `Tem certeza que deseja excluir ${contacts.find(contact => contact.id === id)?.name} da sua lista de contatos?`,
             [
                 {
                     text: 'Sim',
                     onPress: () => {
-                        dispatch(contactsActions.removeContact(id));
+                        db.collection('contacts').doc(id).delete();
                     }
                 },
                 {
@@ -54,7 +67,7 @@ const ContactListScreen = () => {
                         (contact) => (
                             <ContactItem
                                 contact={contact.item}
-                                onDelete={removeContact}
+                                onDelete={handleRemoveContact}
                             />
                         )
                     }
